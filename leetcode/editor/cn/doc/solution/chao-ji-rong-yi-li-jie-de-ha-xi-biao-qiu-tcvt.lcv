@@ -1,0 +1,30 @@
+### 解题思路
+
+小船驶向大海的第一步
+
+解题思路: 利用Java的HashMap的Api | containsKey(),首先判断target - nums[i]的值是否存在, 如果存在 , 则取出返回, 如果不存在 , 则进行存储
+
+### 代码
+
+* java
+
+```java
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        if (Objects.isNull(nums) || nums.length == 0) return null;
+        //解题思路: 利用hash表的特性 , target - nums[i] 是否存在, 如果存在 , 则取出返回, 如果不存在 , 则进行存储
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int curNum = target - nums[i];
+            //是否存在 target - nums[i]的值
+            if (map.containsKey(curNum)) {
+                return new int[]{map.get(curNum), i};
+            }
+            //不存在 , 则进行存储
+            map.put(nums[i], i);
+        }
+        return null;
+    }
+}
+```
+

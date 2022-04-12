@@ -1,0 +1,149 @@
+第一次写字典树，之前也遇到过相关题目，知道有字典树这么个概念，但是根据学习计划，一直都还没接触。正好本周开始接触字符串相关算法了，才学习了KMP、Sunday、Shift And，正好遇到这题直接第一反应就是字典树。
+
+在做题之前写去简单学习了下相关算法，按照本题题意，在没有`.`的时候写了第一版字典树算法
+
+# 字典树
+
+* java
+
+```java
+class WordDictionary {
+
+    TrieNode trieTree;
+
+    public WordDictionary() {
+        trieTree = new TrieNode('\u0000');
+    }
+
+    public void addWord(String word) {
+        if (null == word || word.length() < 1){
+            return;
+        }
+        int idx = -1;
+        TrieNode cur = trieTree;
+        while (++idx < word.length()){
+            if (!cur.children.containsKey(word.charAt(idx))){
+                cur.children.put(word.charAt(idx),new TrieNode(word.charAt(idx)));
+            }
+            cur = cur.children.get(word.charAt(idx));
+        }
+        cur.isTail = true;
+    }
+
+    public boolean search(String word) {
+        int idx = -1;
+        TrieNode cur = trieTree;
+        while (++idx < word.length()){
+            if (cur.children.containsKey(word.charAt(idx))){
+                cur = cur.children.get(word.charAt(idx));
+            }else{
+                return false;
+            }
+        }
+        return cur.isTail;
+    }
+
+
+
+
+    class TrieNode {
+        char value;
+        boolean isTail;
+        HashMap<Character,TrieNode> children;
+
+        public TrieNode(char value) {
+            this.value = value;
+            children = new HashMap<>();
+        }
+    }
+}
+```
+
+写完了上面的，再来看这题，比一般匹配中多了一个`.`的可能，如果遇到`.`则表示可以是任意字符，那么相应的，最直观的作法，我们应当匹配下当前`TrieNode`下的`children`中的每一个节点。
+
+# 在写代码之前
+
+1. `children`结构一开始依旧是使用的`Hashmap`，虽然最终结果能跑通，但是性能上还是有点差距，后来看了下，对应的节点值只会是小写字母，也就是说范围限定死了，那么我们可以把`children`结构改为`TrieNode[]`数组，对应的key从0-25开始映射，这是一个小技巧，在部分情况下用数组代替`Hashmap`能有效提升不少性能，
+2. 对于搜索部分，原本是`cur.children.get(word.charAt(idx))`，现在是不确定多少了，所以分情况判断，如果当前字符是`.`，则遍历children处理，如果不是则只处理对应的明确的那个节点。
+3. 终止判断。
+   - 情况1：如果已经到了被搜索字符串结尾，而当前对应的节点不是一个结束节点，则返回false;
+   - 情况2：如果已经到了被搜索字符串结尾，且当前对应节点是一个结束节点，返回true;
+   - 情况3：在遍历过程中，寻找能和字符串匹配的下一个节点失败，返回false;
+   - 情况4：分支已经走到结束了了，而字符串遍历还没结束
+
+# 那么，代码
+
+* java
+
+```java
+class WordDictionary {
+
+    TrieNode trieTree;
+
+    public WordDictionary() {
+        trieTree = new TrieNode('\u0000');
+    }
+
+    public void addWord(String word) {
+        if (null == word || word.length() < 1){
+            return;
+        }
+        int idx = -1;
+        TrieNode cur = trieTree;
+        while (++idx < word.length()){
+            int key = word.charAt(idx)-'a';
+            if (cur.children[key] == null){
+                cur.children[key] = new TrieNode(word.charAt(idx));
+            }
+            cur = cur.children[key];
+        }
+        cur.isTail = true;
+    }
+
+    public boolean search(String word) {
+        return innerSearch(word,0,trieTree);
+    }
+
+    private boolean innerSearch(String word, int wordIdx, TrieNode startNode){
+        if (wordIdx == word.length() || null==startNode){
+            return null==startNode? false:startNode.isTail;
+        }
+
+        if (word.charAt(wordIdx)=='.'){
+            for (TrieNode child : startNode.children) {
+                if (innerSearch(word,wordIdx+1,child)){
+                    return true;
+                }
+            }
+        }else if(innerSearch(word,wordIdx+1, startNode.children[word.charAt(wordIdx)-'a'])){
+                return true;
+        }
+
+        return false;
+    }
+
+
+    class TrieNode {
+        char value;
+        boolean isTail;
+        TrieNode[] children;
+
+        public TrieNode(char value) {
+            this.value = value;
+            children = new TrieNode[26];
+        }
+    }
+}
+```
+
+跑了下结果，看起来勉强及格吧
+
+* 
+
+```
+解答成功:
+执行耗时:40 ms,击败了67.98% 的Java用户
+内存消耗:49 MB,击败了55.66% 的Java用户
+```
+
+今天第一次接触，有什么问题或者错误希望帮忙指出，感谢了

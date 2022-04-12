@@ -1,0 +1,48 @@
+枚举 第一个数 和 第二个数 的所有可能，如果前两个数确定了，那么**接下来的字符串序列也应该是确定了的**。所以这时只需要 dfs 判断接下来的字符串是否满足即可。
+
+另注意前导 0 的判断，当一个字符串数字长度大于 1 时，第一位不能为 0。
+
+Follow Up：当数字太大时，为防止整数溢出，需要用到 [415. 字符串相加](https://leetcode-cn.com/problems/add-strings/)  的方法。
+
+* 
+
+```
+class Solution {
+public:
+    bool isAdditiveNumber(string num) {
+        int n = num.size();
+        for (int i = 1; i < n; ++i) {
+            string s1 = num.substr(0, i);
+            if (s1.size() > 1 && s1[0] == '0') break;
+            for (int j = i + 1; j < n; ++j) {
+                string s2 = num.substr(i, j - i);
+                if (s2.size() > 1 && s2[0] == '0') break;
+                if (check(num.substr(j), s1, s2)) return true;
+            }
+        }
+        return false;
+    }
+    bool check(string num, string s1, string s2) {
+        string sum = addStrings(s1, s2);
+        if (sum == num) return true;
+        if (num.substr(0, sum.size()) != sum) return false;
+        return check(num.substr(sum.size()), s2, sum);
+    }
+    string addStrings(string s1, string s2) {
+        string res;
+        int i = s1.size() - 1, j = s2.size() - 1;
+        int carry = 0;
+        while (i >= 0 || j >= 0 || carry) {
+            int a = i >= 0 ? s1[i] - '0' : 0;
+            int b = j >= 0 ? s2[j] - '0' : 0;
+            int sum = a + b + carry;
+            res.push_back(sum % 10 + '0');
+            carry = sum / 10;
+            --i; --j;
+        }
+        reverse(begin(res), end(res));
+        return res;
+    }
+};
+```
+

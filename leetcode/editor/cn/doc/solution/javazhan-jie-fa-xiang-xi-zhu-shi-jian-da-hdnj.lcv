@@ -1,0 +1,29 @@
+### 解题思路
+
+首先要理解相邻重复项的隐藏性质, 即对称匹配.
+对称匹配具有LIFO(last in first out)的性质, 因此想到使用栈来解题.
+
+### 代码
+
+* java
+
+```java
+class Solution {
+    public String removeDuplicates(String s) {
+        Deque<Character> deque = new LinkedList<>(); // deque双端队列同时具有stack和queue的方法, 非常方便
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            if (deque.isEmpty() || deque.peekLast() != s.charAt(i)) { // 如果左侧没有字母来匹配, 或左侧相邻字母与当前字母不同
+                deque.offerLast(s.charAt(i)); // 则将当前字母入deque, 并在下一次循环中与其右侧字母比较
+            } else {
+                deque.pollLast(); // 若左侧相邻字母与当前字母相同, 则将刚才的左侧字母弹出并进入下一次循环, 相当于移除了左侧和当前两个字母
+            }
+        }
+        while (!deque.isEmpty()) {
+            sb.append(deque.pollFirst()); // 按deque内字母的原有顺序输出
+        }
+        return sb.toString();
+    } 
+}
+```
+

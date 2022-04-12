@@ -1,0 +1,87 @@
+### 解题思路
+
+因为可能输入的整数太大 `Long`的范围也会超过，所以不能转成`Long`来做，直接使用`String`来做。
+是否满足累加序列直接考虑**回溯**就行。
+
+### 代码
+
+* java
+
+```java
+class Solution {
+    public boolean isAdditiveNumber(String num) {
+        // 至少包含三个数
+        if(num.length() < 3) return false;
+        int n = num.length();
+        return backTrack(num, 0, new ArrayList<>(), n);
+    }
+    public boolean backTrack(String num, int start, List<String> list, int end){
+        // 如果判断到了最后一个
+        if(start == end){
+            int size = list.size();
+            // 前两个相加等于最后一个 add为自定义方法 求大整数之和
+            if(size >= 3 && add(list.get(size - 3),list.get(size - 2)).equals( list.get(size - 1))){
+                return true;
+            }
+        }
+        for(int i = 0; i < num.length(); i++){
+            String substr = num.substring(0, i + 1);
+            // 不含有前导0
+            if(substr.length() > 1 && substr.charAt(0) == '0') continue;
+            String nextstr = num.substring(i + 1, num.length());
+            int size = list.size();
+            // 还没收集到两个数 直接add
+            if(size < 2){
+                list.add(substr);
+            }else{
+                // 有两个数了要判断是否满足累加要求 add是自定义的累加函数
+                if(!add(list.get(size - 2), list.get(size - 1)).equals(substr)){
+                    continue;
+                }else{
+                    list.add(substr);
+                }
+            }
+            // 只要找到了一个符合条件的情况就可以直接返回了
+            if(backTrack(nextstr, start + substr.length(), list, end)){
+                return true;
+            }
+            // 回溯
+            list.remove(list.size() - 1);
+        }
+        return false;
+    }
+    // 自定义的累加方法
+    public String add(String s1, String s2){
+        StringBuilder sb1 = new StringBuilder(s1);
+        StringBuilder sb2 = new StringBuilder(s2);
+        StringBuilder sb = new StringBuilder();
+        int len1 = s1.length();
+        int len2 = s2.length();
+        int len = len1 >= len2 ? len1 : len2;
+        int pre = 0;
+        // 先将短的字符串补上前导0 避免判断麻烦
+        while(len1 < len){
+            sb1.insert(0, "0");
+            len1++;
+        }
+        while(len2 < len){
+            sb2.insert(0, "0");
+            len2++;
+        }
+        // 加法运算 从后往前加 pre是进位 ex是余数
+        for(int i = len - 1; i >= 0; i--){
+            int cur = sb1.charAt(i) - '0' + sb2.charAt(i) - '0' + pre;
+            int ex = cur % 10;
+            pre = cur / 10;
+            sb.append(ex);
+        }
+        // 最后还要进1的情况
+        if(pre != 0){
+            sb.append(pre);
+        }
+        // 因为从后往前append的所以反转返回
+        return sb.reverse().toString();
+    }
+}
+```
+

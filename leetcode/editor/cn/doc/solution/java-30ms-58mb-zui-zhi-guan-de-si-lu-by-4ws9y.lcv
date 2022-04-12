@@ -1,0 +1,102 @@
+![311-1.PNG](https://pic.leetcode-cn.com/1646936444-WvPfEG-311-1.PNG)
+
+### 解题思路
+
+1、构建二叉树
+2、计算左、右子节点数量
+3、计算父节点数量
+4、计算乘积
+5、返回最大乘积个数
+
+### 代码
+
+* java
+
+```java
+class Solution {
+    public int countHighestScoreNodes(int[] parents) {
+        // 构建二叉树
+        BTreeNode[] nodes = new BTreeNode[parents.length];
+        buildTree(parents, nodes);
+        // 计算左、右子节点数量
+        calcLeftRightCount(nodes[0]);
+        // 计算父节点数量
+        caclPrentCount(nodes[0]);
+        // 保存乘积
+        long[] dp = new long[nodes.length];
+        long max = Long.MIN_VALUE;
+        for (int i = 0; i < nodes.length; i++) {
+            BTreeNode n = nodes[i];
+            long p = i == 0 ? 1 : n.parentCount;
+            if (n.left != null && n.right != null) {
+                dp[i] = n.rightCount * n.leftCount * p;
+            } else if (n.left != null) {
+                dp[i] = n.leftCount * p;
+            } else if (n.right != null) {
+                dp[i] = n.rightCount * p;
+            } else {
+                dp[i] = nodes.length - 1;
+            }
+            max = Math.max(dp[i], max);
+        }
+        // 返回最大乘积个数
+        int res = 0;
+        for (long m : dp) {
+            if (m == max) {
+                res++;
+            }
+        }
+        return res;
+    }
+
+    private void buildTree(int[] parents, BTreeNode[] nodes) {
+        for (int i = 0; i < parents.length; i++) {
+            nodes[i] = new BTreeNode();
+        }
+        for (int i = 0; i < parents.length; i++) {
+            int p = parents[i];
+            if (p == -1) {
+                continue;
+            }
+            if (nodes[p].left == null) {
+                nodes[p].left = nodes[i];
+            } else {
+                nodes[p].right = nodes[i];
+            }
+        }
+    }
+
+    private int calcLeftRightCount(BTreeNode node) {
+        int left = 0, right = 0;
+        if (node.left != null) {
+            left += calcLeftRightCount(node.left) + 1;
+        }
+        if (node.right != null) {
+            right = calcLeftRightCount(node.right) + 1;
+        }
+        node.leftCount = left;
+        node.rightCount = right;
+        return left + right;
+    }
+
+    private void caclPrentCount(BTreeNode node) {
+        if (node.left != null) {
+            node.left.parentCount = node.parentCount + node.rightCount + 1;
+            caclPrentCount(node.left);
+        }
+        if (node.right != null) {
+            node.right.parentCount = node.parentCount + node.leftCount + 1;
+            caclPrentCount(node.right);
+        }
+    }
+
+    static class BTreeNode {
+        public BTreeNode left;
+        public BTreeNode right;
+        public long leftCount = 0;
+        public long rightCount = 0;
+        public long parentCount = 0;
+    }
+}
+```
+

@@ -1,0 +1,44 @@
+# 题解
+
+根据题意，可知 $W·L=S$ ($S$表示矩形面积)，要求长度 L 和宽度 W 之间的差距应当尽可能小，因此 W、L应该都在 $\sqrt{S}$ 附近，且 $S\%W=0$ 且 $S\%L=0$，所以我们从$\sqrt$附近开始遍历，找到满足 $S\%W=0$ 的数字，$L=S/W$。
+
+时间复杂度：$\sqrt{S}$
+
+空间复杂度：$O(1)$
+
+# 代码
+
+* c++
+
+```c++
+class Solution {
+public:
+    vector<int> constructRectangle(int area) {
+        for (int i = int(sqrt(area)); i > 0; i--) {
+            if (area % i == 0) 
+                return {area / i, i};
+        }
+        return {};
+    }
+};
+```
+
+# 最后
+
+大家好，我是编程熊，ACM亚洲区域赛金牌，字节跳动、旷视科技前员工，欢迎 [关注我](https://leetcode-cn.com/u/bianchengxiong/) 和加入 [LeetCode组队刷题群](https://mp.weixin.qq.com/s/TsTcCDboXwnTnUeIW3Zg9Q)。
+
+**分享几篇《算法与数据结构》干货文章，希望对你有帮助**
+
+1、[ACM金牌选手讲解LeetCode算法《线性表》](https://mp.weixin.qq.com/s/qwaYOFIksFVqZtA_nisl6g)
+
+2、[ACM金牌选手讲解LeetCode算法《栈和队列的高级应用》](https://mp.weixin.qq.com/s/I3DQOUmABmWav4nrAiI3Fg)
+
+3、[ACM金牌选手讲解LeetCode算法《哈希表》](https://mp.weixin.qq.com/s/af4gvYURUoCTfsyzsI9Www)
+
+4、[ACM金牌选手讲解LeetCode算法《二叉树》](https://mp.weixin.qq.com/s/8AcRNQS0Nno2_fU6kMtZeQ)
+
+5、[编程熊讲解LeetCode算法《堆》](https://mp.weixin.qq.com/s/ggd42G_QJ6I43F-vXSbpdA)
+
+如果题解和文章对你有所帮助，欢迎**点赞**支持。
+
+![image.png](https://pic.leetcode-cn.com/1634962472-BAlVfq-image.png)

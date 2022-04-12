@@ -1,0 +1,67 @@
+### 全行注解，方便理解~
+
+![4.png](https://pic.leetcode-cn.com/1641780016-YNtjrd-4.png)
+🌇 点赞 👍 收藏 ⭐留言 📝 一键三连 ~关注Nick，从你我做起！
+
+### 方法一：回溯
+
+### 执行效率图
+
+![image.png](https://pic.leetcode-cn.com/1641779974-TJzajH-image.png)
+
+### 代码
+
+* java
+
+```java
+class Solution {
+    int length;
+    List<List<Integer>> list = new ArrayList<>();
+    public boolean isAdditiveNumber(String num) {
+        length = num.length();
+        return dfs(0,num);
+    }
+    boolean dfs(int u,String num) {
+        int size = list.size();
+        if (u == length) {
+            return size >= 3;
+        }
+        int max = num.charAt(u) == '0' ? u + 1 : length;
+        List<Integer> cur = new ArrayList<>();
+        for (int i = u; i < max; i++) {
+            cur.add(0, num.charAt(i) - '0');
+            if (size < 2 || check(list.get(size - 2), list.get(size - 1), cur)) {
+                list.add(cur);
+                if (dfs(i + 1,num)) {
+                    return true;
+                }
+                list.remove(list.size() - 1);
+            }
+        }
+        return false;
+    }
+    boolean check(List<Integer> a, List<Integer> b, List<Integer> c) {
+        List<Integer> ans = new ArrayList<>();
+        int t = 0;
+        for (int i = 0; i < a.size() || i < b.size(); i++) {
+            if (i < a.size()) {
+                t += a.get(i);
+            }
+            if (i < b.size()){
+                t += b.get(i);
+            }
+            ans.add(t % 10);
+            t /= 10;
+        }
+        if (t > 0) {
+            ans.add(t);
+        }
+        boolean ok = c.size() == ans.size();
+        for (int i = 0; i < c.size() && ok; i++) {
+            if (c.get(i) != ans.get(i)) ok = false;
+        }
+        return ok;
+    }
+}
+```
+

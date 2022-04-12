@@ -1,0 +1,17 @@
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        //暴力枚举
+        int len = nums.length;
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                if (nums[j] == target - nums[i]) {
+                    return new int[]{i,j};
+                }
+            }
+        }
+        //这个0是个数，代表数组长度，即i返回一个空数组
+        return new int[0];
+    }
+}
+//runtime:52 ms
+//memory:38 MB
